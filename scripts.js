@@ -5,12 +5,10 @@ const jumpBack = document.querySelector('button[data-skip="25"]')
 const jumpForward = document.querySelector('button[data-skip="-10"]')
 const progressBar = document.querySelector("div.progress")
 const playButton = document.querySelector(".player__button.toggle")
-const scrubber = document.querySelector(".progress__filled")
+const progress = document.querySelector(".progress__filled")
 const speedControl = document.querySelector('input[name="playbackRate"]')
 const volControl = document.querySelector('input[name="volume"]')
 const video = document.querySelector(".player__video")
-
-console.log(progressBar)
 
 /*Build the functions */
 function togglePlayState (event) {
@@ -25,12 +23,28 @@ function togglePlayState (event) {
 }
 
 function scrubProgress (event) {
-  let unit = progressBar.offsetWidth/video.duration
+  let progressBarLength = progressBar.offsetWidth
+  let unit = progressBarLength/video.duration
   let position = event.layerX
   let vidPoint = unit * position
+  let percentageFinished = (event.layerX/progressBarLength)*100
+  updateProgressBar(`${percentageFinished}%`)
   video.currentTime = vidPoint
+}
+
+function updateProgressBar(percentage) {
+  progress.style.flexBasis = `${percentage}%`
+  progress.style.width = `${percentage}%`
+}
+
+function updateProgress() {
+  let progressBarLength = progressBar.offsetWidth
+  let percentagePlayed = (video.currentTime/progressBarLength)*100
+  updateProgressBar(percentagePlayed)
 }
 
 /* hook up the event listeners */
 playButton.addEventListener("click", togglePlayState)
+//click or mousemove for the scrubber?
 progressBar.addEventListener("click", scrubProgress)
+video.addEventListener("timeupdate", updateProgress)
